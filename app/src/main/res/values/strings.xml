@@ -1,3 +1,20 @@
 <resources>
     <string name="app_name">My-city</string>
+    <string name="list_fragment_label">Sports</string>
+    <string name="detail_fragment_label">Sport Info</string>
+
+    <string name="parques">Parques</string>
+    <string name="centros">Centros comerciales</string>
+    <string name="niños">Lugares aptos para niños</string>
+    <string name="restaurantes">Restaurantes</string>
+
+    <string name="parques_list_subtitle">Parques.</string>
+    <string name="centros_list_subtitle">Centros.</string>
+    <string name="niños_list_subtitle">niños.</string>
+    <string name="restaurantes_list_subtitle">Restaurantes.</string>
+
+    <string name="parques_detail_text">Parques</string>
+    <string name="centros_detail_text">Centros</string>
+    <string name="niños_detail_text">niños</string>
+    <string name="restaurantes_detail_text">Restaurantes</string>
 </resources>
