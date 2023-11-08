@@ -17,4 +17,7 @@
     <string name="centros_detail_text">Centros</string>
     <string name="niños_detail_text">niños</string>
     <string name="restaurantes_detail_text">Restaurantes</string>
+
+
+    <string name="back_button">Back</string>
 </resources>
