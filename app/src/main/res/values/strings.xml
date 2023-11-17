@@ -1,22 +1,73 @@
 <resources>
     <string name="app_name">My-city</string>
-    <string name="list_fragment_label">Sports</string>
-    <string name="detail_fragment_label">Sport Info</string>
+    <string name="list_fragment_label">Madrid</string>
+    <string name="detail_fragment_label">Info</string>
+
+    <!-- Strings para parques -->
 
     <string name="parques">Parques</string>
-    <string name="centros">Centros comerciales</string>
-    <string name="niños">Lugares aptos para niños</string>
-    <string name="restaurantes">Restaurantes</string>
+    <string name="casaDeCampo">Casa de Campo</string>
+    <string name="Retiro">Retiro</string>
+    <string name="JuanCarlos1">Juan Carlos I</string>
 
     <string name="parques_list_subtitle">Parques.</string>
-    <string name="centros_list_subtitle">Centros.</string>
-    <string name="niños_list_subtitle">niños.</string>
-    <string name="restaurantes_list_subtitle">Restaurantes.</string>
+    <string name="CaseDeCampo_list_subtitle">Casa de Campo.</string>
+    <string name="Retiro_list_subtitle">Retiro.</string>
+    <string name="JuanCarlos1_list_subtitle">Juan Carlos I.</string>
 
-    <string name="parques_detail_text">gjkfshdbjskjksdjkhbsfjhbghjlkdgfh</string>
-    <string name="centros_detail_text">Centros</string>
-    <string name="niños_detail_text">niños</string>
-    <string name="restaurantes_detail_text">Restaurantes</string>
+    <string name="parques_detail_text">Parques</string>
+    <string name="CasaDeCampo_detail_text">Información sobre Casa de Campo</string>
+    <string name="Retiro_detail_text">Información sobre El Retiro</string>
+    <string name="JuanCarlos1_detail_text">Información sobre Juan Carlos I</string>
+
+    <!-- Strings para centros comerciales -->
+
+    <string name="centros">Centros comerciales</string>
+    <string name="Islazul">Islazul</string>
+    <string name="LaVaguada">La Vaguada</string>
+    <string name="LaGavia">La Gavia</string>
+
+    <string name="centros_list_subtitle">Listado de Centros Comerciales</string>
+    <string name="Islazul_list_subtitle">Detalles de Islazul</string>
+    <string name="LaVaguada_list_subtitle">Detalles de La Vaguada</string>
+    <string name="LaGavia_list_subtitle">Detalles de La Gavia</string>
+
+    <string name="Islazul_detail_text">Información sobre Islazul</string>
+    <string name="LaVaguada_detail_text">Información sobre La Vaguada</string>
+    <string name="LaGavia_detail_text">Información sobre La Gavia</string>
+
+    <!-- Strings para Lugares aptos para niños-->
+
+    <string name="niños">Lugares aptos para niños</string>
+    <string name="RatonPerez">Casita del Ratón Pérez</string>
+    <string name="TourBernabeu">Tour por el Santiago Bernabéu</string>
+    <string name="ParqueDeAtracciones">Parque de atracciones de Madrid</string>
+
+    <string name="niños_list_subtitle">Lugares aptos para niños</string>
+    <string name="RatonPerez_list_subtitle">Detalles de Casita del Ratón Pérez</string>
+    <string name="TourBernabeu_list_subtitle">Detalles del Tour por el Santiago Bernabéu</string>
+    <string name="ParqueDeAtracciones_list_subtitle">Detalles del Parque de atracciones de Madrid</string>
+
+    <string name="RatonPerez_detail_text">Información sobre Casita del Ratón Pérez</string>
+    <string name="TourBernabeu_detail_text">Información sobre el Tour por el Santiago Bernabéu</string>
+    <string name="ParqueDeAtracciones_detail_text">Información sobre el Parque de atracciones de Madrid</string>
+
+    <!-- Strings para Restaurantes -->
+
+    <string name="restaurantes">Restaurantes</string>
+    <string name="MordidaBernabeu">La Mordida de Bernabeu</string>
+    <string name="LaEsquinaDelReal">La Esquina Del Real</string>
+    <string name="Sakana">Sakana</string>
+
+    <string name="restaurantes_list_subtitle">Listado de Restaurantes</string>
+    <string name="MordidaBernabeo_list_subtitle">Detalles de La Mordida de Bernabeu</string>
+    <string name="LaEsquinaDelReal_list_subtitle">Detalles de La Esquina Del Real</string>
+    <string name="Sakana_list_subtitle">Detalles de Sakana</string>
+
+    <string name="MordidaBernabeo_detail_text">Información sobre La Mordida de Bernabeu</string>
+    <string name="LaEsquinaDelReal_detail_text">Información sobre La Esquina Del Real</string>
+    <string name="Sakana_detail_text">Información sobre Sakana</string>
+
 
 
     <string name="back_button">Back</string>

@@ -1,14 +1,14 @@
 package com.example.my_city.ui
 
+import MycityViewModel
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,14 +21,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -38,23 +35,17 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.my_city.R
-import com.example.my_city.data.LocalCityDataProvider
 import com.example.my_city.model.City
-import com.example.my_city.ui.theme.MycityTheme
 import com.example.my_city.utils.CityContentType
 
 
@@ -84,10 +75,10 @@ fun MycityApp(
     ) { innerPadding ->
         if (contentType == CityContentType.ListAndDetail) {
             CityListAndDetail(
-                city = uiState.CityList,
-                selectedCity = uiState.currentCity,
+                city = uiState.cityCategories,
+                selectedCity = uiState.currentCategory,
                 onClick = {
-                    viewModel.updateCurrentCity(it)
+                    viewModel.updateCurrentCategory(it)
                 },
                 onBackPressed = onBackPressed,
                 contentPadding = innerPadding,
@@ -96,9 +87,9 @@ fun MycityApp(
         } else {
             if (uiState.isShowingListPage) {
                 CityList(
-                    city = uiState.CityList,
+                    city = uiState.cityCategories,
                     onClick = {
-                        viewModel.updateCurrentCity(it)
+                        viewModel.updateCurrentCategory(it)
                         viewModel.navigateToDetailPage()
                     },
                     modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.padding_medium)),
@@ -106,7 +97,7 @@ fun MycityApp(
                 )
             } else {
                 CityDetail(
-                    selectedCity = uiState.currentCity,
+                    selectedCity = uiState.currentCategory,
                     contentPadding = innerPadding,
                     onBackPressed = {
                         viewModel.navigateToListPage()
@@ -117,9 +108,6 @@ fun MycityApp(
     }
 }
 
-/**
- * Composable that displays the topBar and displays back button if back navigation is possible.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CityAppBar(
@@ -132,8 +120,7 @@ fun CityAppBar(
     TopAppBar(
         title = {
             Text(
-                text =
-                if (isShowingDetailPage) {
+                text = if (isShowingDetailPage) {
                     stringResource(R.string.detail_fragment_label)
                 } else {
                     stringResource(R.string.list_fragment_label)
@@ -160,67 +147,50 @@ fun CityAppBar(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 private fun CityListItem(
     city: City,
     onItemClick: (City) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        elevation = CardDefaults.cardElevation(),
-        modifier = modifier,
-        shape = RoundedCornerShape(dimensionResource(R.dimen.card_corner_radius)),
-        onClick = { onItemClick(city) }
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = dimensionResource(R.dimen.padding_medium), vertical = dimensionResource(R.dimen.padding_small))
+            .clickable { onItemClick(city) }
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .size(dimensionResource(R.dimen.card_image_height))
-        ) {
-            CityListImageItem(
-                city = city,
-                modifier = Modifier.size(dimensionResource(R.dimen.card_image_height))
-            )
-            Column(
-                modifier = Modifier
-                    .padding(
-                        vertical = dimensionResource(R.dimen.padding_small),
-                        horizontal = dimensionResource(R.dimen.padding_medium)
-                    )
-                    .weight(1f)
-            ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            CityListImageItem(city = city, modifier = Modifier.size(64.dp))
+            Column(modifier = Modifier.padding(start = 16.dp)) {
                 Text(
                     text = stringResource(city.titleResourceId),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(bottom = dimensionResource(R.dimen.card_text_vertical_space))
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 4.dp)
                 )
                 Text(
                     text = stringResource(city.subtitleResourceId),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.secondary,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 3
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.secondary
                 )
-                }
             }
         }
     }
-
+}
 
 @Composable
 private fun CityListImageItem(city: City, modifier: Modifier = Modifier) {
-    Box(
+    Image(
+        painter = painterResource(id = city.imageResourceId),
+        contentDescription = null,
         modifier = modifier
-    ) {
-        Image(
-            painter = painterResource(city.imageResourceId),
-            contentDescription = null,
-            alignment = Alignment.Center,
-            contentScale = ContentScale.FillWidth
-        )
-    }
+            .size(64.dp)
+            .clip(RoundedCornerShape(8.dp)),
+        contentScale = ContentScale.Crop
+    )
 }
+
 
 @Composable
 private fun CityList(
@@ -234,14 +204,15 @@ private fun CityList(
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
         modifier = modifier.padding(top = dimensionResource(R.dimen.padding_medium)),
     ) {
-        items(city, key = { city -> city.id }) { city ->
+        items(city, key = { city -> city.id }) { cityItem ->
             CityListItem(
-                city = city,
+                city = cityItem,
                 onItemClick = onClick
             )
         }
     }
 }
+
 
 @Composable
 private fun CityDetail(
@@ -268,44 +239,7 @@ private fun CityDetail(
                     end = contentPadding.calculateEndPadding(layoutDirection)
                 )
         ) {
-            Box {
-                Box {
-                    Image(
-                        painter = painterResource(selectedCity.imageResourceId),
-                        contentDescription = null,
-                        alignment = Alignment.TopCenter,
-                        contentScale = ContentScale.FillWidth,
-                    )
-                }
-                Column(
-                    Modifier
-                        .align(Alignment.BottomStart)
-                        .fillMaxWidth()
-                        .background(
-                            Brush.verticalGradient(
-                                listOf(Color.Transparent, MaterialTheme.colorScheme.scrim),
-                                0f,
-                                400f
-                            )
-                        )
-                ) {
-                    Text(
-                        text = stringResource(selectedCity.titleResourceId),
-                        style = MaterialTheme.typography.headlineLarge,
-                        color = MaterialTheme.colorScheme.inverseOnSurface,
-                        modifier = Modifier
-                            .padding(horizontal = dimensionResource(R.dimen.padding_small))
-                    )
-                }
-            }
-            Text(
-                text = stringResource(selectedCity.cityDetails),
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(
-                    vertical = dimensionResource(R.dimen.padding_detail_content_vertical),
-                    horizontal = dimensionResource(R.dimen.padding_detail_content_horizontal)
-                )
-            )
+            // ... (contenido de los detalles de la ciudad)
         }
     }
 }
@@ -319,63 +253,18 @@ private fun CityListAndDetail(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
-    Row(
-        modifier = modifier
-    ) {
+    Row(modifier = modifier) {
         CityList(
             city = city,
             onClick = onClick,
-            contentPadding = contentPadding,
-            modifier = Modifier
-                .weight(2f)
-                .padding(horizontal = dimensionResource(R.dimen.padding_medium))
+            modifier = Modifier.weight(2f),
+            contentPadding = contentPadding
         )
         CityDetail(
             selectedCity = selectedCity,
-            modifier = Modifier.weight(3f),
-            contentPadding = contentPadding,
             onBackPressed = onBackPressed,
+            modifier = Modifier.weight(3f),
+            contentPadding = contentPadding
         )
-    }
-}
-
-@Preview
-@Composable
-fun CityListItemPreview() {
-    MycityTheme {
-        CityListItem(
-            city = LocalCityDataProvider.defaultCity,
-            onItemClick = {}
-        )
-    }
-}
-
-@Preview
-@Composable
-fun CityListPreview() {
-   MycityTheme {
-        Surface {
-            CityList(
-                city = LocalCityDataProvider.getCityData(),
-                onClick = {},
-            )
-        }
-    }
-}
-
-@Preview(device = Devices.TABLET)
-@Composable
-fun CityListAndDetailsPreview() {
-    MycityTheme {
-        Surface {
-            CityListAndDetail(
-                city = LocalCityDataProvider.getCityData(),
-                selectedCity = LocalCityDataProvider.getCityData().getOrElse(0) {
-                    LocalCityDataProvider.defaultCity
-                },
-                onClick = {},
-                onBackPressed = {},
-            )
-        }
     }
 }

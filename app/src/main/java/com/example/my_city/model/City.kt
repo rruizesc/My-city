@@ -8,5 +8,5 @@ data class City(
     @StringRes val titleResourceId: Int,
     @StringRes val subtitleResourceId: Int,
     @DrawableRes val imageResourceId: Int,
-    @StringRes val cityDetails: Int
+    val categories: List<SubCityCategory>
 )
