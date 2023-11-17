@@ -13,24 +13,24 @@ class MycityViewModel : ViewModel() {
 
     private val subCityByCategory = mapOf(
         cityCategories[0] to listOf(
-            SubCity(1, R.string.casaDeCampo,R.drawable.CasaCampo),
-            SubCity(2, R.string.Retiro,R.drawable.Retiro),
-            SubCity(3, R.string.JuanCarlos1,R.drawable.JuanCarlosI)
+            SubCity(1, R.string.casaDeCampo,R.drawable.casa_de_campo),
+            SubCity(2, R.string.Retiro,R.drawable.retiro),
+            SubCity(3, R.string.JuanCarlos1,R.drawable.juan_carlos)
         ),
         cityCategories[1] to listOf(
-            SubCity(1, R.string.Islazul,R.drawable.IslaZul),
-            SubCity(2, R.string.LaVaguada,R.drawable.Vaguada),
-            SubCity(3, R.string.LaVaguada,R.drawable.Vaguada)
+            SubCity(1, R.string.Islazul,R.drawable.islazul),
+            SubCity(2, R.string.LaVaguada,R.drawable.vaguada),
+            SubCity(3, R.string.LaVaguada,R.drawable.gavia)
         ),
         cityCategories[2] to listOf(
-            SubCity(1, R.string.RatonPerez,R.drawable.MuseoRatonPerez),
-            SubCity(2, R.string.TourBernabeu,R.drawable.MejorEstadioDdelMundo),
-            SubCity(3, R.string.ParqueDeAtracciones,R.drawable.ParqueDeAtracciones)
+            SubCity(1, R.string.RatonPerez,R.drawable.raton),
+            SubCity(2, R.string.TourBernabeu,R.drawable.mejor_estdio_del_mundo),
+            SubCity(3, R.string.ParqueDeAtracciones,R.drawable.parque_de_atracciones)
         ),
         cityCategories[3] to listOf(
-            SubCity(1, R.string.MordidaBernabeu,R.drawable.LaMordidaBernabeu),
-            SubCity(2, R.string.LaEsquinaDelReal,R.drawable.LaEsquina),
-            SubCity(3, R.string.Sakana,R.drawable.Sakana)
+            SubCity(1, R.string.MordidaBernabeu,R.drawable.la_mordida),
+            SubCity(2, R.string.LaEsquinaDelReal,R.drawable.la_esquina),
+            SubCity(3, R.string.Sakana,R.drawable.sakana)
         ),
 
     )
@@ -55,6 +55,7 @@ class MycityViewModel : ViewModel() {
         }
     }
 
+
     fun updateCurrentSubCategory(selectedSubCategory: SubCity) {
         _uiState.update {
             it.copy(
@@ -63,6 +64,10 @@ class MycityViewModel : ViewModel() {
             )
         }
     }
+    fun getSubCitiesForCurrentCategory(): List<SubCity> {
+        return subCityByCategory[_uiState.value.currentCategory] ?: emptyList()
+    }
+
 
     fun navigateToListPage() {
         _uiState.update {
