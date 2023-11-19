@@ -1,6 +1,6 @@
 package com.example.my_city.ui
 
-import MycityViewModel
+
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -54,7 +54,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.my_city.R
 import com.example.my_city.data.LocalCityDataProvider
 import com.example.my_city.model.City
-import com.example.my_city.model.SubCity
 import com.example.my_city.ui.theme.MycityTheme
 import com.example.my_city.utils.CityContentType
 
@@ -62,6 +61,7 @@ import com.example.my_city.utils.CityContentType
 @Composable
 fun MycityApp(
     windowSize: WindowWidthSizeClass,
+    onBackPressed: () -> Unit,
 ) {
     val viewModel: MycityViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
@@ -83,43 +83,39 @@ fun MycityApp(
         }
     ) { innerPadding ->
         if (contentType == CityContentType.ListAndDetail) {
-            val subCities = viewModel.getSubCitiesForCurrentCategory()
-            CitySubList(
-                subCities = subCities,
-                onClick = { selectedSubCity ->
-                    viewModel.updateCurrentSubCategory(selectedSubCity)
-                    viewModel.navigateToDetailPage()
+            CityListAndDetail(
+                city = uiState.cityList,
+                selectedCity = uiState.currentCity,
+                onClick = {
+                    viewModel.updateCurrentCity(it)
                 },
+                onBackPressed = onBackPressed,
                 contentPadding = innerPadding,
                 modifier = Modifier.fillMaxWidth()
             )
         } else {
             if (uiState.isShowingListPage) {
-                val cityCategories = uiState.cityCategories
                 CityList(
-                    city = cityCategories,
-                    onClick = { selectedCategory ->
-                        viewModel.updateCurrentCategory(selectedCategory)
+                    city = uiState.cityList,
+                    onClick = {
+                        viewModel.updateCurrentCity(it)
+                        viewModel.navigateToDetailPage()
                     },
                     modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.padding_medium)),
                     contentPadding = innerPadding,
                 )
             } else {
-                val currentSubCategory = uiState.currentSubCategory
-                if (currentSubCategory != null) {
-                    CityDetail(
-                        selectedCity = currentSubCategory,
-                        contentPadding = innerPadding,
-                        onBackPressed = {
-                            viewModel.navigateToListPage()
-                        }
-                    )
-                }
+                CityDetail(
+                    selectedCity = uiState.currentCity,
+                    contentPadding = innerPadding,
+                    onBackPressed = {
+                        viewModel.navigateToListPage()
+                    }
+                )
             }
         }
     }
 }
-
 
 /**
  * Composable that displays the topBar and displays back button if back navigation is possible.
@@ -227,18 +223,6 @@ private fun CityListImageItem(city: City, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun SubCityListImageItem(
-    subCity: SubCity
-) {
-    Image(
-        painter = painterResource(subCity.imageResourceId),
-        contentDescription = null,
-        alignment = Alignment.Center,
-        contentScale = ContentScale.FillWidth
-    )
-}
-
-@Composable
 private fun CityList(
     city: List<City>,
     onClick: (City) -> Unit,
@@ -259,77 +243,11 @@ private fun CityList(
     }
 }
 
-@Composable
-private fun CitySubList(
-    subCities: List<SubCity>,
-    onClick: (SubCity) -> Unit,
-    modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(0.dp),
-) {
-    LazyColumn(
-        contentPadding = contentPadding,
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_medium)),
-        modifier = modifier.padding(top = dimensionResource(R.dimen.padding_medium)),
-    ) {
-        items(subCities, key = { subCity -> subCity.id }) { subCity ->
-            CitySubListItem(
-                subCity = subCity,
-                onItemClick = onClick
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun CitySubListItem(
-    subCity: SubCity,
-    onItemClick: (SubCity) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        elevation = CardDefaults.cardElevation(),
-        modifier = modifier,
-        shape = RoundedCornerShape(dimensionResource(R.dimen.card_corner_radius)),
-        onClick = { onItemClick(subCity) }
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .size(dimensionResource(R.dimen.card_image_height))
-        ) {
-            SubCityListImageItem(
-                subCity = subCity
-            )
-            Column(
-                modifier = Modifier
-                    .padding(
-                        vertical = dimensionResource(R.dimen.padding_small),
-                        horizontal = dimensionResource(R.dimen.padding_medium)
-                    )
-                    .weight(1f)
-            ) {
-                Text(
-                    text = stringResource(subCity.titleResourceId),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(bottom = dimensionResource(R.dimen.card_text_vertical_space))
-                )
-                Text(
-                    text = stringResource(subCity.subtitleResourceId),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.secondary,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 3
-                )
-            }
-        }
-    }
-}
 
 
 @Composable
 private fun CityDetail(
-    selectedCity: Any,
+    selectedCity: City,
     onBackPressed: () -> Unit,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier
@@ -339,116 +257,57 @@ private fun CityDetail(
     }
     val scrollState = rememberScrollState()
     val layoutDirection = LocalLayoutDirection.current
-
-    if (selectedCity is City) {
-        Box(
-            modifier = modifier
-                .verticalScroll(state = scrollState)
-                .padding(top = contentPadding.calculateTopPadding())
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(
-                        bottom = contentPadding.calculateTopPadding(),
-                        start = contentPadding.calculateStartPadding(layoutDirection),
-                        end = contentPadding.calculateEndPadding(layoutDirection)
-                    )
-            ) {
-                Box {
-                    Box {
-                        Image(
-                            painter = painterResource(selectedCity.imageResourceId),
-                            contentDescription = null,
-                            alignment = Alignment.TopCenter,
-                            contentScale = ContentScale.FillWidth,
-                        )
-                    }
-                    Column(
-                        Modifier
-                            .align(Alignment.BottomStart)
-                            .fillMaxWidth()
-                            .background(
-                                Brush.verticalGradient(
-                                    listOf(Color.Transparent, MaterialTheme.colorScheme.scrim),
-                                    0f,
-                                    400f
-                                )
-                            )
-                    ) {
-                        Text(
-                            text = stringResource(selectedCity.titleResourceId),
-                            style = MaterialTheme.typography.headlineLarge,
-                            color = MaterialTheme.colorScheme.inverseOnSurface,
-                            modifier = Modifier
-                                .padding(horizontal = dimensionResource(R.dimen.padding_small))
-                        )
-                    }
-                }
-                Text(
-                    text = stringResource(selectedCity.subtitleResourceId),
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(
-                        vertical = dimensionResource(R.dimen.padding_detail_content_vertical),
-                        horizontal = dimensionResource(R.dimen.padding_detail_content_horizontal)
-                    )
+    Box(
+        modifier = modifier
+            .verticalScroll(state = scrollState)
+            .padding(top = contentPadding.calculateTopPadding())
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(
+                    bottom = contentPadding.calculateTopPadding(),
+                    start = contentPadding.calculateStartPadding(layoutDirection),
+                    end = contentPadding.calculateEndPadding(layoutDirection)
                 )
-            }
-        }
-    } else if (selectedCity is SubCity) {
-        Box(
-            modifier = modifier
-                .verticalScroll(state = scrollState)
-                .padding(top = contentPadding.calculateTopPadding())
         ) {
-            Column(
-                modifier = Modifier
-                    .padding(
-                        bottom = contentPadding.calculateTopPadding(),
-                        start = contentPadding.calculateStartPadding(layoutDirection),
-                        end = contentPadding.calculateEndPadding(layoutDirection)
-                    )
-            ) {
+            Box {
                 Box {
-                    Box {
-                        Image(
-                            painter = painterResource(selectedCity.imageResourceId),
-                            contentDescription = null,
-                            alignment = Alignment.TopCenter,
-                            contentScale = ContentScale.FillWidth,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                    Column(
-                        Modifier
-                            .align(Alignment.BottomStart)
-                            .fillMaxWidth()
-                            .background(
-                                Brush.verticalGradient(
-                                    listOf(Color.Transparent, MaterialTheme.colorScheme.scrim),
-                                    0f,
-                                    400f
-                                )
-                            )
-                    ) {
-                        Text(
-                            text = stringResource(selectedCity.titleResourceId),
-                            style = MaterialTheme.typography.headlineLarge,
-                            color = MaterialTheme.colorScheme.inverseOnSurface,
-                            modifier = Modifier
-                                .padding(horizontal = dimensionResource(R.dimen.padding_small))
-
-                        )
-                    }
-                }
-                Text(
-                    text = stringResource(selectedCity.detailTextId),
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(
-                        vertical = dimensionResource(R.dimen.padding_detail_content_vertical),
-                        horizontal = dimensionResource(R.dimen.padding_detail_content_horizontal)
+                    Image(
+                        painter = painterResource(selectedCity.imageResourceId),
+                        contentDescription = null,
+                        alignment = Alignment.TopCenter,
+                        contentScale = ContentScale.FillWidth,
                     )
-                )
+                }
+                Column(
+                    Modifier
+                        .align(Alignment.BottomStart)
+                        .fillMaxWidth()
+                        .background(
+                            Brush.verticalGradient(
+                                listOf(Color.Transparent, MaterialTheme.colorScheme.scrim),
+                                0f,
+                                400f
+                            )
+                        )
+                ) {
+                    Text(
+                        text = stringResource(selectedCity.titleResourceId),
+                        style = MaterialTheme.typography.headlineLarge,
+                        color = MaterialTheme.colorScheme.inverseOnSurface,
+                        modifier = Modifier
+                            .padding(horizontal = dimensionResource(R.dimen.padding_small))
+                    )
+                }
             }
+            Text(
+                text = stringResource(selectedCity.subtitleResourceId),
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(
+                    vertical = dimensionResource(R.dimen.padding_detail_content_vertical),
+                    horizontal = dimensionResource(R.dimen.padding_detail_content_horizontal)
+                )
+            )
         }
     }
 }

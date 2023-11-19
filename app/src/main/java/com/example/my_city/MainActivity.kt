@@ -19,7 +19,8 @@ class MainActivity : ComponentActivity() {
                 Surface {
                     val windowSize = calculateWindowSizeClass(this)
                     MycityApp(
-                        windowSize = windowSize.widthSizeClass
+                        windowSize = windowSize.widthSizeClass,
+                        onBackPressed = { finish() }
                     )
                 }
             }

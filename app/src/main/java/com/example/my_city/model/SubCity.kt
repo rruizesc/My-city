@@ -13,8 +13,8 @@ data class SubCity(
     constructor(id: Int, titleResourceId: Int, imageResourceId: Int) : this(
         id = id,
         titleResourceId = titleResourceId,
-        subtitleResourceId = 0, // o el valor por defecto que desees para el subtitleResourceId
-        detailTextId = 0, // o el valor por defecto que desees para el detailTextId
+        subtitleResourceId = 0,
+        detailTextId = 0,
         imageResourceId = imageResourceId
     )
 }
