@@ -59,6 +59,7 @@ enum class MycityScreen {
 
 @Composable
 fun MycityApp(
+    viewModel: MycityViewModel = viewModel(),
     navController: NavHostController = rememberNavController(),
     windowSize: WindowWidthSizeClass
 ) {
@@ -70,13 +71,20 @@ fun MycityApp(
         composable(route = MycityScreen.CityList.name) {
             CityListScreen(
                 cities = LocalCityDataProvider.getCategories(),
-                windowSize = windowSize
+                windowSize = windowSize,
+                navController = navController
             )
         }
-        composable(route = "${MycityScreen.OptionList.name}/{cityName}"){backStackEntry ->
-            val cityName = backStackEntry.arguments?.getString("cityName")
-            OptionListScreen(cityName = cityName, windowSize = windowSize)
+        composable(route = MycityScreen.OptionList.name){
+            OptionListScreen(
+                viewModel = viewModel,
+                windowSize = windowSize,
+                onBackPressed = {
+                    navController.popBackStack()
+                }
+            )
         }
+
     }
 }
 
@@ -85,11 +93,12 @@ fun MycityApp(
 fun CityListScreen(
     cities: List<City>,
     modifier: Modifier = Modifier,
+    navController: NavHostController = rememberNavController(),
     windowSize: WindowWidthSizeClass
 ) {
     val viewModel: MycityViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
-    val navController = rememberNavController()
+
 
     Scaffold(
         topBar = {
@@ -107,13 +116,10 @@ fun CityListScreen(
                 .padding(bottom = dimensionResource(R.dimen.padding_medium)),
             contentPadding = innerPadding
         ) {
-            items(cities) { city ->
+            items(cities, key = {city -> city.id}) {city ->
                 CityItem(
                     city = city,
-                    onCitySelected = { selectedCity ->
-                        val subCities = selectedCity.categories
-                        navController.navigate("${MycityScreen.OptionList.name}/$subCities")
-                    }
+                    navController = navController
                 )
             }
         }
@@ -163,11 +169,11 @@ fun CityAppBar(
 @Composable
 fun CityItem(
     city: City,
-    onCitySelected: (City) -> Unit
+    navController: NavHostController
 ) {
     Card(
         modifier = Modifier
-            .clickable { onCitySelected(city) }
+            .clickable { navController.navigate("${MycityScreen.OptionList.name}/${city.categories}") }
             .padding(dimensionResource(R.dimen.padding_small))
     ) {
         Column(

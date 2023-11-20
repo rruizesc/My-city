@@ -1,10 +1,10 @@
 package com.example.my_city.ui
 
 import androidx.lifecycle.ViewModel
+import com.example.my_city.R
 import com.example.my_city.data.LocalCityDataProvider
 import com.example.my_city.model.City
 import com.example.my_city.model.Opcion
-import com.example.my_city.model.SubCity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -26,17 +26,6 @@ class MycityViewModel : ViewModel() {
         }
     }
 
-    fun updateCurrentSubCity(
-        subCity: SubCity
-    ) {
-        _uiState.update {
-            it.copy(
-                subCityActual = subCity,
-                opcionActual = subCity.opcion[0],
-                isShowingListPage = true
-            )
-        }
-    }
 
     fun navegarAListaOpciones() {
         _uiState.update {
@@ -57,14 +46,28 @@ class MycityViewModel : ViewModel() {
 
 
 data class CityUiState(
-    val subCityActual: SubCity,
+    val cityActual: City,
     val opcionActual: Opcion,
     val isShowingListPage: Boolean = true
 )
 
-val cityInicial = LocalCityDataProvider.getCategories()[0]
-val estadoActual = CityUiState(
-    subCityActual = cityInicial.categories[0],
-    opcionActual = cityInicial.categories[0].opcion[0]
+val cityCategories: List<City> = LocalCityDataProvider.getCategories().toList()
 
+val cityInicial = cityCategories.firstOrNull() ?: City(
+    id = 0,
+    imageResourceId = R.drawable.parque,
+    titleResourceId = R.string.list_fragment_label,
+    categories = emptyList()
+)
+val opcionInicial = cityInicial.categories.firstOrNull() ?: Opcion(
+    id = 0,
+    imageResourceId = R.drawable.parque,
+    titleResourceId = R.string.list_fragment_label,
+    detailTextId = R.string.imagen_city
+)
+
+val estadoActual = CityUiState(
+    cityActual = cityInicial,
+    opcionActual = opcionInicial,
+    isShowingListPage = true
 )

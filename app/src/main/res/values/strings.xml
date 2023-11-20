@@ -2,7 +2,9 @@
     <string name="app_name">My-city</string>
     <string name="list_fragment_label">Madrid</string>
     <string name="detail_fragment_label">Info</string>
-    <string name="imagen_city"></string>
+    <string name="imagen_city">imagen ciudad</string>
+    <string name="flecha_volver">flecha de volver</string>
+    <string name="category_banner">category_banner</string>
 
     <!-- Strings para parques -->
 
